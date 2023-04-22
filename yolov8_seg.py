@@ -9,11 +9,7 @@ cap = cv2.VideoCapture("move_cups.mp4")
 # load model
 model = YOLOSegmentation("yolov8n-seg.pt") # medium coco dataset
 
-while True: # allows you to click through frames
-    ret, frame = cap.read()
-    if not ret:
-        break # not a normal frame
-
+def segment_image(frame):
     W, H, _ = frame.shape
     # pass frame to model
     bboxes, classes, segmentations, scores, masks = model.detect(frame) #use model.detect form yolov8m
@@ -36,7 +32,14 @@ while True: # allows you to click through frames
         # redImg[:,:] = (0, 0, 255)
         # redMask = cv2.bitwise_and(redImg, redImg, mask=mask)
         # cv2.addWeighted(redMask, 1, frame, 1, 0, frame)
-    cv2.imshow("img", frame)
+        return frame # segmented image
+    
+while True: # allows you to click through frames
+    ret, frame = cap.read()
+    if not ret:
+        break # not a normal frame
+    prc = segment_image(frame)
+    cv2.imshow("img", prc)
     key = cv2.waitKey(0) # key = cv2.waitKey(1) no clicks
     if key == 27:
         break
